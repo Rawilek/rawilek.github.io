@@ -81,7 +81,45 @@ async function save(){if(!token){message('Conecte-se primeiro.','error');return;
 async function removeStory(){if(!selectedId)return message('Selecione uma matéria para excluir.','error');const a=articles.find(a=>a.id===selectedId);if(!confirm('Excluir a matéria "'+a.title+'"? Essa ação retira a matéria do portal.'))return;try{const latest=await readData();latest.list=latest.list.filter(a=>a.id!==selectedId);await api(DB,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:'Remove matéria: '+a.title,content:encode64(JSON.stringify(latest.list,null,2)+'\n'),sha:latest.sha,branch:'main'})});articles=latest.list;clearForm();message('Matéria removida. A imagem continuará armazenada no repositório.','ok');}catch(e){message('Erro ao excluir: '+e.message,'error');}}
 function showPreview(){const title=$('title').value||'Título da reportagem';const blocks=readBlocks();$('preview').innerHTML='<h2>'+safe(title)+'</h2><p>'+safe($('summary').value)+'</p>'+blocks.map(b=>b.type==='image'?'<figure><img src="'+safe(b.src||$('editor').querySelector('figure[data-local-id="'+b.localId+'"] img')?.src||'')+'" alt="'+safe(b.alt||'Fotografia')+'"><figcaption>'+safe(b.caption||'')+'</figcaption></figure>':'<'+(b.type==='h2'?'h3':b.type==='blockquote'?'blockquote':'p')+'>'+safe(b.text)+'</'+(b.type==='h2'?'h3':b.type==='blockquote'?'blockquote':'p')+'>').join('');$('preview').classList.remove('hidden');$('preview').scrollIntoView({behavior:'smooth',block:'nearest'});}
 function format(type){$('editor').focus();document.execCommand('formatBlock',false,type==='blockquote'?'blockquote':type==='h2'?'h2':'p');}
-function pastePlain(e){e.preventDefault();const txt=(e.clipboardData||window.clipboardData).getData('text/plain');document.execCommand('insertText',false,txt);}
+function pastePlain(e){
+ const clipboard=e.clipboardData;
+ const imageItem=Array.from(clipboard?.items||[]).find(item=>item.type.startsWith('image/'));
+ const image=imageItem?.getAsFile()||Array.from(clipboard?.files||[]).find(file=>file.type.startsWith('image/'));
+ if(image){
+  e.preventDefault();
+  rememberInsertionPoint();
+  insertArticleImage(image);
+  return;
+ }
+ // Evita que colagens de páginas externas insiram HTML não autorizado.
+ e.preventDefault();
+ const text=clipboard?.getData('text/plain')||'';
+ if(text)document.execCommand('insertText',false,text);
+}
+function insertArticleImage(file){
+ if(!file||!['image/jpeg','image/png','image/webp'].includes(file.type)||file.size>4*1024*1024){
+  message('A imagem precisa ser JPG, PNG ou WebP e ter até 4 MB.','error');return;
+ }
+ const id='local-'+Date.now()+'-'+Math.random().toString(36).slice(2,9);
+ pendingInlinePhotos.set(id,file);
+ const figure=photoFigure({src:URL.createObjectURL(file),localId:id,caption:'',alt:file.name||'Fotografia da reportagem'});
+ const editor=$('editor');
+ if(currentInsertionBlock?.isConnected&&currentInsertionBlock.parentElement===editor){
+  currentInsertionBlock.after(figure);
+ }else{
+  editor.append(figure);
+ }
+ const after=figure.nextElementSibling;
+ if(!after||after.tagName!=='P'){
+  const paragraph=document.createElement('p');
+  paragraph.append(document.createElement('br'));
+  figure.after(paragraph);
+ }
+ currentInsertionBlock=figure;
+ figure.querySelector('figcaption').focus();
+ message('Imagem inserida! Digite a legenda abaixo da foto e clique em Salvar no GitHub para publicar.','ok');
+}
+
 $('connect').onclick=async()=>{const value=$('token').value.trim();if(!value)return alert('Cole seu token pessoal do GitHub.');token=value;try{await sync();$('gate').classList.add('hidden');$('workspace').classList.remove('hidden');clearForm();$('token').value='';}catch(e){token='';alert('Não foi possível acessar o repositório. Confira o token, a permissão Contents e o repositório selecionado.\n'+e.message);}};
 $('disconnect').onclick=()=>{token='';articles=[];$('workspace').classList.add('hidden');$('gate').classList.remove('hidden');};
 $('new').onclick=clearForm;$('reload').onclick=async()=>{try{await sync();message('Lista atualizada.','ok');}catch(e){message('Falha ao atualizar: '+e.message,'error');}};
@@ -172,21 +210,22 @@ $('insertInlineImage').onclick=()=>{
 };
 $('inlineImageFile').onchange=()=>{
  const file=$('inlineImageFile').files[0];
- if(!file)return;
- if(file.size>4*1024*1024||!['image/jpeg','image/png','image/webp'].includes(file.type)){
-  message('A imagem precisa ser JPG, PNG ou WebP e ter até 4 MB.','error');return;
- }
- const id='local-'+Date.now()+'-'+Math.random().toString(36).slice(2,9);
- pendingInlinePhotos.set(id,file);
- const url=URL.createObjectURL(file);
- const figure=photoFigure({src:url,localId:id,caption:'',alt:file.name});
- const editor=$('editor');
- if(currentInsertionBlock?.isConnected&&currentInsertionBlock.parentElement===editor){
-  currentInsertionBlock.after(figure);
- }else editor.append(figure);
- currentInsertionBlock=figure;
- const p=document.createElement('p');p.append(document.createElement('br'));figure.after(p);
- figure.querySelector('figcaption').focus();
- message('Foto inserida. Edite a legenda abaixo da imagem e clique em Salvar no GitHub quando terminar.','ok');
+ if(file)insertArticleImage(file);
  $('inlineImageFile').value='';
 };
+// Permite arrastar fotos do computador diretamente para o texto da matéria.
+$('editor').addEventListener('dragover',e=>{
+ if(Array.from(e.dataTransfer?.types||[]).includes('Files'))e.preventDefault();
+});
+$('editor').addEventListener('drop',e=>{
+ const file=Array.from(e.dataTransfer?.files||[]).find(f=>f.type.startsWith('image/'));
+ if(!file)return;
+ e.preventDefault();
+ currentInsertionBlock=null;
+ const target=document.elementFromPoint(e.clientX,e.clientY);
+ if(target&&$('editor').contains(target)){
+  const block=target.closest('p,h2,blockquote,figure');
+  if(block)currentInsertionBlock=block;
+ }
+ insertArticleImage(file);
+});
