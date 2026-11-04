@@ -2,15 +2,17 @@
 const REPO='subfeminino/subfeminino.github.io';
 const API='https://api.github.com/repos/'+REPO+'/contents/';
 const DB='data/articles.json';
+const EDITORS_DB='data/editors.json';
 const $=id=>document.getElementById(id);
-let token='',articles=[],selectedId=null;
+let token='',articles=[],selectedId=null,editorProfiles=[],selectedEditor=0;
 const safe=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function message(text,kind=''){const m=$('message');m.textContent=text;m.className=kind;}
 function encode64(text){const bytes=new TextEncoder().encode(text);let s='';for(let i=0;i<bytes.length;i+=0x8000)s+=String.fromCharCode(...bytes.slice(i,i+0x8000));return btoa(s);}
 function decode64(text){let s=atob(text.replace(/\s/g,''));return new TextDecoder().decode(Uint8Array.from(s,c=>c.charCodeAt(0)));}
 async function api(path,opt={}){const response=await fetch(API+path,{...opt,headers:{Accept:'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28',Authorization:'Bearer '+token,...opt.headers}});const result=await response.json().catch(()=>({}));if(!response.ok)throw Error((result.message||'Erro ao acessar GitHub')+' (HTTP '+response.status+')');return result;}
 async function readData(){const r=await api(DB+'?t='+Date.now());return {sha:r.sha,list:JSON.parse(decode64(r.content))};}
-async function sync(){const data=await readData();articles=data.list;renderList();return data;}
+async function sync(){const [data,people]=await Promise.all([readData(),readEditorData()]);articles=data.list;editorProfiles=people.list;renderList();renderEditorList();return data;}
+async function readEditorData(){const r=await api(EDITORS_DB+'?t='+Date.now());return {sha:r.sha,list:JSON.parse(decode64(r.content))};}
 function renderList(){const parent=$('storyList');parent.innerHTML='';if(!articles.length)parent.textContent='Nenhuma matéria cadastrada.';for(const a of articles){const b=document.createElement('button');b.className='story'+(a.id===selectedId?' active':'');const title=document.createElement('strong');title.textContent=a.title||'Sem título';const small=document.createElement('small');small.textContent=(a.published?'Publicada':'Rascunho')+' · '+(a.category||a.section||'Sem editoria');b.append(title,small);b.onclick=()=>openStory(a.id);parent.append(b);}}
 function renderBlocks(blocks){const editor=$('editor');editor.replaceChildren();for(const b of blocks||[]){const type=['h2','blockquote'].includes(b.type)?b.type:'p';const node=document.createElement(type);node.textContent=b.text||'';editor.append(node);}if(!editor.children.length){const p=document.createElement('p');p.append(document.createElement('br'));editor.append(p);}}
 function readBlocks(){const editor=$('editor');const blocks=[];function visit(node){if(node.nodeType===3){const text=node.textContent.trim();if(text)blocks.push({type:'p',text});return;}if(node.nodeType!==1)return;const tag=node.tagName.toLowerCase();if(['p','h2','blockquote','div'].includes(tag)){const text=node.innerText.trim();if(text)blocks.push({type:tag==='h2'?'h2':tag==='blockquote'?'blockquote':'p',text});return;}if(tag==='br')return;for(const child of node.childNodes)visit(child);}for(const node of editor.childNodes)visit(node);return blocks;}
@@ -18,7 +20,7 @@ function clearForm(){selectedId=null;$('formTitle').textContent='Nova matéria';
 function openStory(id){const a=articles.find(x=>x.id===id);if(!a)return;selectedId=a.id;$('formTitle').textContent='Editar matéria';$('title').value=a.title||'';$('section').value=a.section||'campo';$('category').value=a.category||'';const parts=(a.date||'').match(/^(\d\d)\/(\d\d)\/(\d{4})$/);$('date').value=parts?parts[3]+'-'+parts[2]+'-'+parts[1]:new Date().toISOString().slice(0,10);$('summary').value=a.summary||'';$('imagePath').value=a.image||'';$('cover').value='';previewImage(a.image||'');$('published').checked=a.published!==false;renderBlocks(a.blocks?.length?a.blocks:a.short?[{type:'p',text:a.short}]:[]);$('preview').classList.add('hidden');message('');renderList();window.scrollTo({top:0,behavior:'smooth'});}
 function slug(title){return (title||'reportagem').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'').slice(0,65)||'reportagem';}
 function previewImage(src){const img=$('coverPreview');if(!src){img.classList.add('hidden');return;}img.src=src;img.classList.remove('hidden');}
-async function uploadImage(file){if(file.size>4*1024*1024)throw Error('Imagem maior que 4 MB. Reduza o tamanho.');if(!['image/jpeg','image/png','image/webp'].includes(file.type))throw Error('Use JPG, PNG ou WebP.');const ext=file.type==='image/png'?'png':file.type==='image/webp'?'webp':'jpg';const path='assets/materia-'+Date.now()+'-'+Math.random().toString(36).slice(2,8)+'.'+ext;const b64=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(String(reader.result).split(',')[1]);reader.onerror=reject;reader.readAsDataURL(file);});await api(path,{method:'PUT',body:JSON.stringify({message:'Adiciona fotografia da matéria SUB',content:b64,branch:'main'}),headers:{'Content-Type':'application/json'}});return path;}
+async function uploadImage(file,prefix='materia'){if(file.size>4*1024*1024)throw Error('Imagem maior que 4 MB. Reduza o tamanho.');if(!['image/jpeg','image/png','image/webp'].includes(file.type))throw Error('Use JPG, PNG ou WebP.');const ext=file.type==='image/png'?'png':file.type==='image/webp'?'webp':'jpg';const path='assets/'+prefix+'-'+Date.now()+'-'+Math.random().toString(36).slice(2,8)+'.'+ext;const b64=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(String(reader.result).split(',')[1]);reader.onerror=reject;reader.readAsDataURL(file);});await api(path,{method:'PUT',body:JSON.stringify({message:'Adiciona fotografia da matéria SUB',content:b64,branch:'main'}),headers:{'Content-Type':'application/json'}});return path;}
 async function save(){if(!token){message('Conecte-se primeiro.','error');return;}const title=$('title').value.trim(),summary=$('summary').value.trim();if(!title||!summary){message('Preencha o título e a linha fina/resumo.','error');return;}const btn=$('save');btn.disabled=true;message('Salvando no GitHub...');try{const latest=await readData();let current=latest.list.find(a=>a.id===selectedId),id=selectedId||slug(title);if(!selectedId){let n=2;while(latest.list.some(a=>a.id===id)){id=slug(title)+'-'+n++;}}let image=$('imagePath').value;const file=$('cover').files[0];if(file){message('Enviando fotografia para o GitHub...');image=await uploadImage(file);}if(!image)throw Error('Escolha uma fotografia para a matéria.');const dateISO=$('date').value;const date=dateISO?dateISO.split('-').reverse().join('/'):'';const blocks=readBlocks();const bodyText=blocks.map(b=>b.text).join(' ');const story={...current,id,title,summary,short:bodyText.slice(0,220),section:$('section').value,category:$('category').value.trim()||$('section').selectedOptions[0].text,date,image,blocks,published:$('published').checked,time:Math.max(1,Math.ceil(bodyText.split(/\s+/).length/200))+' min de leitura',updatedAt:new Date().toISOString()};if(current)latest.list=latest.list.map(a=>a.id===id?story:a);else latest.list.unshift(story);message('Publicando alterações...');await api(DB,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:(current?'Atualiza':'Adiciona')+' matéria: '+title,content:encode64(JSON.stringify(latest.list,null,2)+'\n'),sha:latest.sha,branch:'main'})});articles=latest.list;selectedId=id;$('imagePath').value=image;renderList();message('Matéria salva! O site será atualizado após a publicação do GitHub Pages.','ok');$('formTitle').textContent='Editar matéria';$('cover').value='';previewImage(image);}catch(e){message('Não foi possível salvar: '+e.message+'. Se outra pessoa editou ao mesmo tempo, clique em Atualizar lista e tente novamente.','error');}finally{btn.disabled=false;}}
 async function removeStory(){if(!selectedId)return message('Selecione uma matéria para excluir.','error');const a=articles.find(a=>a.id===selectedId);if(!confirm('Excluir a matéria "'+a.title+'"? Essa ação retira a matéria do portal.'))return;try{const latest=await readData();latest.list=latest.list.filter(a=>a.id!==selectedId);await api(DB,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:'Remove matéria: '+a.title,content:encode64(JSON.stringify(latest.list,null,2)+'\n'),sha:latest.sha,branch:'main'})});articles=latest.list;clearForm();message('Matéria removida. A imagem continuará armazenada no repositório.','ok');}catch(e){message('Erro ao excluir: '+e.message,'error');}}
 function showPreview(){const title=$('title').value||'Título da reportagem';const blocks=readBlocks();$('preview').innerHTML='<h2>'+safe(title)+'</h2><p>'+safe($('summary').value)+'</p>'+blocks.map(b=>'<'+(b.type==='h2'?'h3':b.type==='blockquote'?'blockquote':'p')+'>'+safe(b.text)+'</'+(b.type==='h2'?'h3':b.type==='blockquote'?'blockquote':'p')+'>').join('');$('preview').classList.remove('hidden');$('preview').scrollIntoView({behavior:'smooth',block:'nearest'});}
@@ -31,3 +33,61 @@ $('save').onclick=save;$('delete').onclick=removeStory;$('previewButton').onclic
 $('cover').onchange=()=>{const file=$('cover').files[0];if(file)previewImage(URL.createObjectURL(file));};
 for(const button of document.querySelectorAll('[data-format]')){button.addEventListener('mousedown',e=>e.preventDefault());button.onclick=()=>format(button.dataset.format);}
 $('editor').addEventListener('paste',pastePlain);
+
+
+function switchPanel(mode){
+ const editors=mode==='editors';
+ $('articleSidebar').classList.toggle('hidden',editors);
+ $('editorsSidebar').classList.toggle('hidden',!editors);
+ $('articlePanel').classList.toggle('hidden',editors);
+ $('editorsPanel').classList.toggle('hidden',!editors);
+ $('tabArticles').classList.toggle('primary',!editors);
+ $('tabEditors').classList.toggle('primary',editors);
+ if(editors)openEditorProfile(selectedEditor);
+}
+function renderEditorList(){
+ const el=$('editorList');el.replaceChildren();
+ editorProfiles.forEach((p,i)=>{
+  const button=document.createElement('button');
+  button.className='story'+(i===selectedEditor?' active':'');
+  const name=document.createElement('strong');name.textContent=p[0]||'Editora';
+  const role=document.createElement('small');role.textContent=p[1]||'';
+  button.append(name,role);button.onclick=()=>openEditorProfile(i);el.append(button);
+ });
+}
+function editorMessage(text,error=false){const el=$('editorMessage');el.textContent=text;el.className=error?'error':'ok';}
+function openEditorProfile(i){
+ if(!editorProfiles[i])return;
+ selectedEditor=i;const p=editorProfiles[i];
+ $('editorName').value=p[0]||'';$('editorRole').value=p[1]||'';
+ $('editorBio').value=p[2]||'';$('editorPhoto').value='';
+ $('editorPhotoPreview').src='assets/'+p[3];
+ editorMessage('');renderEditorList();
+}
+$('tabArticles').onclick=()=>switchPanel('articles');
+$('tabEditors').onclick=()=>switchPanel('editors');
+$('editorPhoto').onchange=()=>{
+ const f=$('editorPhoto').files[0];if(!f)return;
+ if(f.size>4*1024*1024){editorMessage('A foto não pode ultrapassar 4 MB.',true);$('editorPhoto').value='';return;}
+ $('editorPhotoPreview').src=URL.createObjectURL(f);
+};
+$('saveEditor').onclick=async()=>{
+ if(!token){editorMessage('Entre no painel com seu token.',true);return;}
+ const name=$('editorName').value.trim(),role=$('editorRole').value.trim(),bio=$('editorBio').value.trim();
+ if(!name||!role||!bio){editorMessage('Preencha nome, cargo e descrição.',true);return;}
+ const button=$('saveEditor');button.disabled=true;editorMessage('Salvando alterações...');
+ try{
+  const latest=await readEditorData();
+  const existing=latest.list[selectedEditor];
+  if(!existing)throw Error('Perfil não encontrado. Recarregue a página.');
+  let filename=existing[3];
+  const photo=$('editorPhoto').files[0];
+  if(photo){editorMessage('Enviando a nova fotografia...');const path=await uploadImage(photo,'editora');filename=path.replace(/^assets\//,'');}
+  latest.list[selectedEditor]=[name,role,bio,filename];
+  await api(EDITORS_DB,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:'Atualiza perfil da editora '+name,content:encode64(JSON.stringify(latest.list,null,2)+'\n'),sha:latest.sha,branch:'main'})});
+  editorProfiles=latest.list;
+  openEditorProfile(selectedEditor);
+  editorMessage('Perfil salvo com sucesso! A página Sobre será atualizada após a publicação do GitHub Pages.');
+ }catch(err){editorMessage('Não foi possível salvar: '+err.message,true);}
+ finally{button.disabled=false;}
+};
