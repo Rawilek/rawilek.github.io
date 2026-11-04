@@ -45,10 +45,10 @@ footer{text-align:center;color:#795967;font-size:12px;padding:20px}
 <div class="actions" style="margin-top:13px"><button id="connect" class="primary">Conectar ao GitHub</button><a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">Criar token no GitHub ↗</a></div>
 <p class="muted">O token fica somente na memória desta aba e é apagado quando ela é fechada ou atualizada. Nunca é salvo no código do portal.</p></section>
 <div id="workspace" class="shell hidden">
-<aside class="panel"><h2>Matérias</h2><div class="actions"><button id="new" class="coral">+ Nova matéria</button><button id="reload">Atualizar lista</button></div>
+<aside class="panel"><h2>Redação SUB</h2><div class="actions" style="margin-bottom:16px"><button id="tabArticles" class="primary" type="button">Matérias</button><button id="tabEditors" type="button">Editoras</button></div><div id="articleSidebar"><h2>Matérias</h2><div class="actions"><button id="new" class="coral">+ Nova matéria</button><button id="reload">Atualizar lista</button></div>
 <p class="muted">Selecione uma reportagem para editar.</p><div id="storyList" class="sidebar-list"></div>
-<hr class="divider"><button id="disconnect">Sair do editor</button></aside>
-<section class="panel"><h1 id="formTitle">Nova matéria</h1><p class="muted">Faça alterações e clique em Salvar no GitHub para publicar.</p>
+</div><div id="editorsSidebar" class="hidden"><h2>Perfis das editoras</h2><p class="muted">Selecione uma editora e troque a foto ou os dados do perfil.</p><div id="editorList" class="sidebar-list"></div></div><hr class="divider"><button id="disconnect">Sair do editor</button></aside>
+<section class="panel" id="articlePanel"><h1 id="formTitle">Nova matéria</h1><p class="muted">Faça alterações e clique em Salvar no GitHub para publicar.</p>
 <div class="grid2"><div><label for="title">Título da reportagem *</label><input id="title" required placeholder="Título da matéria"></div>
 <div><label for="section">Editoria *</label><select id="section"><option value="campo">Elas em campo</option><option value="profissional">Do sub ao profissional</option><option value="bastidores">Nos bastidores</option></select></div></div>
 <div class="grid2"><div><label for="category">Etiqueta da matéria</label><input id="category" placeholder="Ex.: Sub-17"></div>
@@ -67,6 +67,17 @@ footer{text-align:center;color:#795967;font-size:12px;padding:20px}
 <div class="actions" style="margin-top:20px"><label class="toggle" style="margin:0"><input id="published" type="checkbox" checked> Publicar no site (desmarque para rascunho)</label></div>
 <div class="actions" style="margin-top:19px"><button class="primary" id="save">Salvar no GitHub</button><button id="previewButton">Pré-visualizar</button><button id="delete" style="color:#ac1839">Excluir matéria</button></div>
 <p id="message" role="status" aria-live="polite"></p><div id="preview" class="hidden"></div>
+</section>
+<section class="panel hidden" id="editorsPanel"><h1>Editar perfil da editora</h1>
+<p class="muted">Escolha uma editora na lista à esquerda. Altere o nome, cargo, apresentação ou foto e clique em Salvar perfil. Essas alterações aparecerão na página Sobre.</p>
+<label for="editorName">Nome da editora</label><input id="editorName" maxlength="120" required>
+<label for="editorRole">Cargo</label><input id="editorRole" maxlength="80" required>
+<label for="editorBio">Descrição do perfil</label><textarea id="editorBio" maxlength="1000" required></textarea>
+<label for="editorPhoto">Nova foto (JPG, PNG ou WebP, até 4 MB)</label><input id="editorPhoto" type="file" accept="image/jpeg,image/png,image/webp">
+<img id="editorPhotoPreview" alt="Foto atual ou nova fotografia da editora" style="display:block;width:140px;height:140px;border-radius:50%;object-fit:cover;margin:17px 0;border:3px solid #ffe1d6">
+<p class="muted">A imagem deve ser preferencialmente quadrada; o site mostrará a foto em formato circular. A imagem anterior não será apagada automaticamente.</p>
+<div class="actions"><button id="saveEditor" class="primary">Salvar perfil no GitHub</button></div>
+<p id="editorMessage" role="status" aria-live="polite"></p>
 </section></div>
 </main><footer>SUB • Editor de matérias • Hospedagem gratuita GitHub Pages</footer>
 <script src="admin.js"></script></body></html>
