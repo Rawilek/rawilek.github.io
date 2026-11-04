@@ -1,0 +1,56 @@
+[
+  {
+    "id": "gabrielle-alves",
+    "category": "Elas em campo",
+    "date": "02/11/2026",
+    "time": "6 min de leitura",
+    "title": "Do futsal à Seleção: o caminho de Gabrielle Alves no futebol de base",
+    "summary": "A convocação para um período de treinamentos com a Seleção Brasileira Sub-15 está entre os momentos mais marcantes da trajetória de Gabrielle Alves Fernandes. Aos 16 anos, a jogadora...",
+    "short": "Aos 16 anos, a atleta do São Paulo acumula passagens por diferentes etapas de formação, disputou competições e foi convocada para a Seleção.",
+    "image": "assets/gabrielle.jpg",
+    "section": "campo",
+    "published": true,
+    "blocks": [
+      {
+        "type": "p",
+        "text": "Aos 16 anos, a atleta do São Paulo acumula passagens por diferentes etapas de formação, disputou competições e foi convocada para a Seleção."
+      }
+    ]
+  },
+  {
+    "id": "isabela-tomasi",
+    "category": "Sub-17",
+    "date": "",
+    "time": "6 min de leitura",
+    "title": "Entre o sonho e a realidade: a trajetória de Isabela Tomasi no futebol feminino",
+    "summary": "Da base do Santos FC à decisão de deixar os gramados, uma história sobre escolhas, desafios e a transição para o profissional.",
+    "short": "Da base do Santos FC à decisão de deixar os gramados, os caminhos e desafios da formação de uma atleta.",
+    "image": "assets/isabela.jpg",
+    "section": "profissional",
+    "published": true,
+    "blocks": [
+      {
+        "type": "p",
+        "text": "Da base do Santos FC à decisão de deixar os gramados, os caminhos e desafios da formação de uma atleta."
+      }
+    ]
+  },
+  {
+    "id": "defesas-cruzamentos",
+    "category": "Nos bastidores",
+    "date": "",
+    "time": "7 min de leitura",
+    "title": "Entre defesas e cruzamentos: Os desafios da profissionalização no futebol feminino em diferentes posições",
+    "summary": "Os bastidores da formação no futebol feminino e os desafios para seguir carreira em diferentes posições.",
+    "short": "Profissionais responsáveis pela formação e os desafios para construir uma trajetória no esporte.",
+    "image": "assets/bastidores.jpg",
+    "section": "bastidores",
+    "published": true,
+    "blocks": [
+      {
+        "type": "p",
+        "text": "Profissionais responsáveis pela formação e os desafios para construir uma trajetória no esporte."
+      }
+    ]
+  }
+]
