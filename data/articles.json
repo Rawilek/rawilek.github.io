@@ -3,11 +3,11 @@
     "id": "gabrielle-alves",
     "category": "Elas em campo",
     "date": "02/11/2026",
-    "time": "6 min de leitura",
+    "time": "1 min de leitura",
     "title": "Do futsal à Seleção: o caminho de Gabrielle Alves no futebol de base",
-    "summary": "A convocação para um período de treinamentos com a Seleção Brasileira Sub-15 está entre os momentos mais marcantes da trajetória de Gabrielle Alves Fernandes. Aos 16 anos, a jogadora...",
+    "summary": "Aos 16 anos, a atleta do São Paulo acumula passagens por diferentes etapas de formação, disputou competições nacionais e internacionais e busca transformar a experiência na base em uma carreira profissional.",
     "short": "Aos 16 anos, a atleta do São Paulo acumula passagens por diferentes etapas de formação, disputou competições e foi convocada para a Seleção.",
-    "image": "assets/gabrielle.jpg",
+    "image": "assets/materia-1793818108443-6yx61v.jpg",
     "section": "campo",
     "published": true,
     "blocks": [
@@ -15,7 +15,8 @@
         "type": "p",
         "text": "Aos 16 anos, a atleta do São Paulo acumula passagens por diferentes etapas de formação, disputou competições e foi convocada para a Seleção."
       }
-    ]
+    ],
+    "updatedAt": "2026-11-04T18:48:30.074Z"
   },
   {
     "id": "isabela-tomasi",
