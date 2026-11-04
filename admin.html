@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Painel de redação — SUB</title><meta name="robots" content="noindex,nofollow">
+<title>Painel de redação — SUB</title><meta name="robots" content="noindex,nofollow"><meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Playfair+Display:wght@700;800;900&display=swap" rel="stylesheet">
 <style>
 :root{--vinho:#80082e;--coral:#ff8056;--tinta:#361021;--cinza:#795967;--fundo:#fff8f6}*{box-sizing:border-box}
@@ -68,12 +68,13 @@ footer{text-align:center;color:#795967;font-size:12px;padding:20px}
 <input id="imagePath" type="hidden"><img id="coverPreview" class="hidden" alt="Prévia da capa">
 <p class="muted">Ao salvar, a fotografia selecionada será enviada para a pasta assets do GitHub.</p>
 <hr class="divider"><h2>Texto completo da matéria</h2>
-<p class="muted"><strong>Agora você pode copiar uma foto e colar aqui com Ctrl + V.</strong> Clique no parágrafo onde ela deve aparecer, cole a imagem e edite a legenda logo abaixo. Você também pode usar “Inserir foto no texto” ou arrastar uma imagem do computador para dentro do editor. Fotos de até 4 MB.</p>
+<p class="muted"><strong>Agora você pode copiar uma foto e colar aqui com Ctrl + V.</strong> Clique no parágrafo onde ela deve aparecer, cole a imagem e edite a legenda logo abaixo. Você também pode usar “Inserir foto no texto” ou arrastar uma imagem do computador para dentro do editor. Fotos de até 4 MB. Se copiar de um site e não funcionar, salve a imagem no computador ou use a captura de tela (Windows + Shift + S).</p>
 <div class="toolbar" role="toolbar" aria-label="Formatação da reportagem">
 <button type="button" data-format="p">¶ Parágrafo</button>
 <button type="button" data-format="h2">T Subtítulo</button>
 <button type="button" data-format="blockquote">❝ Citação</button>
-<button type="button" id="insertInlineImage" class="coral">▣ Inserir foto no texto</button><input id="inlineImageFile" type="file" accept="image/jpeg,image/png,image/webp" hidden>
+<button type="button" id="insertInlineImage" class="coral">▣ Escolher foto do computador</button>
+<button type="button" id="pasteImageButton" class="coral">📋 Colar foto copiada</button><input id="inlineImageFile" type="file" accept="image/jpeg,image/png,image/webp" hidden>
 </div><div id="editor" class="editor" contenteditable="true" role="textbox" aria-multiline="true" aria-label="Texto da reportagem" spellcheck="true"></div>
 <div class="actions" style="margin-top:20px"><label class="toggle" style="margin:0"><input id="published" type="checkbox" checked> Publicar no site (desmarque para rascunho)</label></div>
 <div class="actions" style="margin-top:19px"><button class="primary" id="save">Salvar no GitHub</button><button id="previewButton">Pré-visualizar</button><button id="delete" style="color:#ac1839">Excluir matéria</button></div>
@@ -91,4 +92,4 @@ footer{text-align:center;color:#795967;font-size:12px;padding:20px}
 <p id="editorMessage" role="status" aria-live="polite"></p>
 </section></div>
 </main><footer>SUB • Editor de matérias • Hospedagem gratuita GitHub Pages</footer>
-<script src="admin.js"></script></body></html>
+<script src="admin.js?v=20261104-3"></script></body></html>
