@@ -14,16 +14,72 @@ async function readData(){const r=await api(DB+'?t='+Date.now());return {sha:r.s
 async function sync(){const [data,people]=await Promise.all([readData(),readEditorData()]);articles=data.list;editorProfiles=people.list;renderList();renderEditorList();return data;}
 async function readEditorData(){const r=await api(EDITORS_DB+'?t='+Date.now());return {sha:r.sha,list:JSON.parse(decode64(r.content))};}
 function renderList(){const parent=$('storyList');parent.innerHTML='';if(!articles.length)parent.textContent='Nenhuma matéria cadastrada.';for(const a of articles){const b=document.createElement('button');b.className='story'+(a.id===selectedId?' active':'');const title=document.createElement('strong');title.textContent=a.title||'Sem título';const small=document.createElement('small');small.textContent=(a.published?'Publicada':'Rascunho')+' · '+(a.category||a.section||'Sem editoria');b.append(title,small);b.onclick=()=>openStory(a.id);parent.append(b);}}
-function renderBlocks(blocks){const editor=$('editor');editor.replaceChildren();for(const b of blocks||[]){const type=['h2','blockquote'].includes(b.type)?b.type:'p';const node=document.createElement(type);node.textContent=b.text||'';editor.append(node);}if(!editor.children.length){const p=document.createElement('p');p.append(document.createElement('br'));editor.append(p);}}
-function readBlocks(){const editor=$('editor');const blocks=[];function visit(node){if(node.nodeType===3){const text=node.textContent.trim();if(text)blocks.push({type:'p',text});return;}if(node.nodeType!==1)return;const tag=node.tagName.toLowerCase();if(['p','h2','blockquote','div'].includes(tag)){const text=node.innerText.trim();if(text)blocks.push({type:tag==='h2'?'h2':tag==='blockquote'?'blockquote':'p',text});return;}if(tag==='br')return;for(const child of node.childNodes)visit(child);}for(const node of editor.childNodes)visit(node);return blocks;}
+
+const pendingInlinePhotos=new Map();
+let currentInsertionBlock=null;
+function photoFigure(item={}){
+ const figure=document.createElement('figure');
+ figure.className='inline-photo';
+ figure.contentEditable='false';
+ const pic=document.createElement('img');
+ pic.alt=item.alt||'Fotografia da reportagem';
+ pic.loading='lazy';
+ if(item.src){pic.src=item.src;figure.dataset.src=item.src;}
+ if(item.localId)figure.dataset.localId=item.localId;
+ const caption=document.createElement('figcaption');
+ caption.contentEditable='true';
+ caption.setAttribute('role','textbox');
+ caption.setAttribute('aria-label','Legenda e crédito da fotografia');
+ caption.textContent=item.caption||'Legenda: escreva aqui o que aparece na foto e o crédito';
+ const controls=document.createElement('div');
+ controls.className='figure-actions';
+ controls.contentEditable='false';
+ const buttons=[
+  ['↑ Mover para cima',()=>{if(figure.previousElementSibling)$('editor').insertBefore(figure,figure.previousElementSibling);}],
+  ['↓ Mover para baixo',()=>{if(figure.nextElementSibling)$('editor').insertBefore(figure.nextElementSibling,figure);}],
+  ['✕ Remover foto',()=>{const id=figure.dataset.localId;if(id)pendingInlinePhotos.delete(id);figure.remove();}]
+ ];
+ for(const [label,action] of buttons){const button=document.createElement('button');button.type='button';button.textContent=label;button.onclick=action;controls.append(button);}
+ figure.append(pic,caption,controls);
+ return figure;
+}
+function renderBlocks(blocks){
+ const editor=$('editor');editor.replaceChildren();pendingInlinePhotos.clear();currentInsertionBlock=null;
+ for(const b of blocks||[]){
+  if(b.type==='image'){editor.append(photoFigure(b));continue;}
+  const type=['h2','blockquote'].includes(b.type)?b.type:'p';
+  const node=document.createElement(type);node.textContent=b.text||'';editor.append(node);
+ }
+ if(!editor.children.length){const p=document.createElement('p');p.append(document.createElement('br'));editor.append(p);}
+}
+function readBlocks(){
+ const editor=$('editor'),blocks=[];
+ function visit(node){
+  if(node.nodeType===3){const value=node.textContent.trim();if(value)blocks.push({type:'p',text:value});return;}
+  if(node.nodeType!==1)return;
+  const tag=node.tagName.toLowerCase();
+  if(tag==='figure'&&node.classList.contains('inline-photo')){
+   const caption=node.querySelector('figcaption');
+   const photo=node.querySelector('img');
+   blocks.push({type:'image',src:node.dataset.src||'',localId:node.dataset.localId||'',caption:caption?caption.innerText.trim():'',alt:photo?.alt||'Fotografia da reportagem'});return;
+  }
+  if(['p','h2','blockquote','div'].includes(tag)){
+   const value=node.innerText.trim();if(value)blocks.push({type:tag==='h2'?'h2':tag==='blockquote'?'blockquote':'p',text:value});return;
+  }
+  if(tag==='br')return;
+  for(const child of node.childNodes)visit(child);
+ }
+ for(const node of editor.childNodes)visit(node);
+ return blocks;
+}
 function clearForm(){selectedId=null;$('formTitle').textContent='Nova matéria';$('title').value='';$('section').value='campo';$('category').value='';$('date').value=new Date().toISOString().slice(0,10);$('summary').value='';$('imagePath').value='';$('cover').value='';$('coverPreview').classList.add('hidden');$('published').checked=true;renderBlocks([]);$('preview').classList.add('hidden');message('');renderList();}
 function openStory(id){const a=articles.find(x=>x.id===id);if(!a)return;selectedId=a.id;$('formTitle').textContent='Editar matéria';$('title').value=a.title||'';$('section').value=a.section||'campo';$('category').value=a.category||'';const parts=(a.date||'').match(/^(\d\d)\/(\d\d)\/(\d{4})$/);$('date').value=parts?parts[3]+'-'+parts[2]+'-'+parts[1]:new Date().toISOString().slice(0,10);$('summary').value=a.summary||'';$('imagePath').value=a.image||'';$('cover').value='';previewImage(a.image||'');$('published').checked=a.published!==false;renderBlocks(a.blocks?.length?a.blocks:a.short?[{type:'p',text:a.short}]:[]);$('preview').classList.add('hidden');message('');renderList();window.scrollTo({top:0,behavior:'smooth'});}
 function slug(title){return (title||'reportagem').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'').slice(0,65)||'reportagem';}
 function previewImage(src){const img=$('coverPreview');if(!src){img.classList.add('hidden');return;}img.src=src;img.classList.remove('hidden');}
 async function uploadImage(file,prefix='materia'){if(file.size>4*1024*1024)throw Error('Imagem maior que 4 MB. Reduza o tamanho.');if(!['image/jpeg','image/png','image/webp'].includes(file.type))throw Error('Use JPG, PNG ou WebP.');const ext=file.type==='image/png'?'png':file.type==='image/webp'?'webp':'jpg';const path='assets/'+prefix+'-'+Date.now()+'-'+Math.random().toString(36).slice(2,8)+'.'+ext;const b64=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(String(reader.result).split(',')[1]);reader.onerror=reject;reader.readAsDataURL(file);});await api(path,{method:'PUT',body:JSON.stringify({message:'Adiciona fotografia da matéria SUB',content:b64,branch:'main'}),headers:{'Content-Type':'application/json'}});return path;}
-async function save(){if(!token){message('Conecte-se primeiro.','error');return;}const title=$('title').value.trim(),summary=$('summary').value.trim();if(!title||!summary){message('Preencha o título e a linha fina/resumo.','error');return;}const btn=$('save');btn.disabled=true;message('Salvando no GitHub...');try{const latest=await readData();let current=latest.list.find(a=>a.id===selectedId),id=selectedId||slug(title);if(!selectedId){let n=2;while(latest.list.some(a=>a.id===id)){id=slug(title)+'-'+n++;}}let image=$('imagePath').value;const file=$('cover').files[0];if(file){message('Enviando fotografia para o GitHub...');image=await uploadImage(file);}if(!image)throw Error('Escolha uma fotografia para a matéria.');const dateISO=$('date').value;const date=dateISO?dateISO.split('-').reverse().join('/'):'';const blocks=readBlocks();const bodyText=blocks.map(b=>b.text).join(' ');const story={...current,id,title,summary,short:bodyText.slice(0,220),section:$('section').value,category:$('category').value.trim()||$('section').selectedOptions[0].text,date,image,blocks,published:$('published').checked,time:Math.max(1,Math.ceil(bodyText.split(/\s+/).length/200))+' min de leitura',updatedAt:new Date().toISOString()};if(current)latest.list=latest.list.map(a=>a.id===id?story:a);else latest.list.unshift(story);message('Publicando alterações...');await api(DB,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:(current?'Atualiza':'Adiciona')+' matéria: '+title,content:encode64(JSON.stringify(latest.list,null,2)+'\n'),sha:latest.sha,branch:'main'})});articles=latest.list;selectedId=id;$('imagePath').value=image;renderList();message('Matéria salva! O site será atualizado após a publicação do GitHub Pages.','ok');$('formTitle').textContent='Editar matéria';$('cover').value='';previewImage(image);}catch(e){message('Não foi possível salvar: '+e.message+'. Se outra pessoa editou ao mesmo tempo, clique em Atualizar lista e tente novamente.','error');}finally{btn.disabled=false;}}
+async function save(){if(!token){message('Conecte-se primeiro.','error');return;}const title=$('title').value.trim(),summary=$('summary').value.trim();if(!title||!summary){message('Preencha o título e a linha fina/resumo.','error');return;}const btn=$('save');btn.disabled=true;message('Salvando no GitHub...');try{const latest=await readData();let current=latest.list.find(a=>a.id===selectedId),id=selectedId||slug(title);if(!selectedId){let n=2;while(latest.list.some(a=>a.id===id)){id=slug(title)+'-'+n++;}}let image=$('imagePath').value;const file=$('cover').files[0];if(file){message('Enviando fotografia para o GitHub...');image=await uploadImage(file);}if(!image)throw Error('Escolha uma fotografia para a matéria.');const dateISO=$('date').value;const date=dateISO?dateISO.split('-').reverse().join('/'):'';const blocks=readBlocks();for(const b of blocks){if(b.type==='image'&&b.localId){const file=pendingInlinePhotos.get(b.localId);if(!file)throw Error('Não foi possível encontrar a foto selecionada. Insira novamente.');message('Enviando fotos internas para o GitHub...');b.src=await uploadImage(file,'foto-reportagem');delete b.localId;}else if(b.type==='image'){delete b.localId;}}const bodyText=blocks.filter(b=>b.type!=='image').map(b=>b.text).join(' ');const story={...current,id,title,summary,short:bodyText.slice(0,220),section:$('section').value,category:$('category').value.trim()||$('section').selectedOptions[0].text,date,image,blocks,published:$('published').checked,time:Math.max(1,Math.ceil(bodyText.split(/\s+/).length/200))+' min de leitura',updatedAt:new Date().toISOString()};if(current)latest.list=latest.list.map(a=>a.id===id?story:a);else latest.list.unshift(story);message('Publicando alterações...');await api(DB,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:(current?'Atualiza':'Adiciona')+' matéria: '+title,content:encode64(JSON.stringify(latest.list,null,2)+'\n'),sha:latest.sha,branch:'main'})});articles=latest.list;selectedId=id;$('imagePath').value=image;renderList();message('Matéria salva! O site será atualizado após a publicação do GitHub Pages.','ok');$('formTitle').textContent='Editar matéria';$('cover').value='';previewImage(image);renderBlocks(blocks);}catch(e){message('Não foi possível salvar: '+e.message+'. Se outra pessoa editou ao mesmo tempo, clique em Atualizar lista e tente novamente.','error');}finally{btn.disabled=false;}}
 async function removeStory(){if(!selectedId)return message('Selecione uma matéria para excluir.','error');const a=articles.find(a=>a.id===selectedId);if(!confirm('Excluir a matéria "'+a.title+'"? Essa ação retira a matéria do portal.'))return;try{const latest=await readData();latest.list=latest.list.filter(a=>a.id!==selectedId);await api(DB,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:'Remove matéria: '+a.title,content:encode64(JSON.stringify(latest.list,null,2)+'\n'),sha:latest.sha,branch:'main'})});articles=latest.list;clearForm();message('Matéria removida. A imagem continuará armazenada no repositório.','ok');}catch(e){message('Erro ao excluir: '+e.message,'error');}}
-function showPreview(){const title=$('title').value||'Título da reportagem';const blocks=readBlocks();$('preview').innerHTML='<h2>'+safe(title)+'</h2><p>'+safe($('summary').value)+'</p>'+blocks.map(b=>'<'+(b.type==='h2'?'h3':b.type==='blockquote'?'blockquote':'p')+'>'+safe(b.text)+'</'+(b.type==='h2'?'h3':b.type==='blockquote'?'blockquote':'p')+'>').join('');$('preview').classList.remove('hidden');$('preview').scrollIntoView({behavior:'smooth',block:'nearest'});}
+function showPreview(){const title=$('title').value||'Título da reportagem';const blocks=readBlocks();$('preview').innerHTML='<h2>'+safe(title)+'</h2><p>'+safe($('summary').value)+'</p>'+blocks.map(b=>b.type==='image'?'<figure><img src="'+safe(b.src||$('editor').querySelector('figure[data-local-id="'+b.localId+'"] img')?.src||'')+'" alt="'+safe(b.alt||'Fotografia')+'"><figcaption>'+safe(b.caption||'')+'</figcaption></figure>':'<'+(b.type==='h2'?'h3':b.type==='blockquote'?'blockquote':'p')+'>'+safe(b.text)+'</'+(b.type==='h2'?'h3':b.type==='blockquote'?'blockquote':'p')+'>').join('');$('preview').classList.remove('hidden');$('preview').scrollIntoView({behavior:'smooth',block:'nearest'});}
 function format(type){$('editor').focus();document.execCommand('formatBlock',false,type==='blockquote'?'blockquote':type==='h2'?'h2':'p');}
 function pastePlain(e){e.preventDefault();const txt=(e.clipboardData||window.clipboardData).getData('text/plain');document.execCommand('insertText',false,txt);}
 $('connect').onclick=async()=>{const value=$('token').value.trim();if(!value)return alert('Cole seu token pessoal do GitHub.');token=value;try{await sync();$('gate').classList.add('hidden');$('workspace').classList.remove('hidden');clearForm();$('token').value='';}catch(e){token='';alert('Não foi possível acessar o repositório. Confira o token, a permissão Contents e o repositório selecionado.\n'+e.message);}};
@@ -90,4 +146,47 @@ $('saveEditor').onclick=async()=>{
   editorMessage('Perfil salvo com sucesso! A página Sobre será atualizada após a publicação do GitHub Pages.');
  }catch(err){editorMessage('Não foi possível salvar: '+err.message,true);}
  finally{button.disabled=false;}
+};
+
+
+/* Inserção de fotos no ponto escolhido da reportagem */
+function rememberInsertionPoint(){
+ const selection=window.getSelection();
+ if(!selection||!selection.rangeCount)return;
+ let node=selection.anchorNode;
+ if(!node||!$('editor').contains(node))return;
+ if(node.nodeType!==1)node=node.parentElement;
+ const block=node?.closest('p,h2,blockquote,div,figure');
+ if(block&&$('editor').contains(block)){
+  let top=block;while(top.parentElement&&top.parentElement!==$('editor'))top=top.parentElement;
+  if(top.parentElement===$('editor'))currentInsertionBlock=top;
+ }
+}
+$('editor').addEventListener('keyup',rememberInsertionPoint);
+$('editor').addEventListener('mouseup',rememberInsertionPoint);
+$('editor').addEventListener('touchend',rememberInsertionPoint);
+$('insertInlineImage').onclick=()=>{
+ rememberInsertionPoint();
+ $('inlineImageFile').value='';
+ $('inlineImageFile').click();
+};
+$('inlineImageFile').onchange=()=>{
+ const file=$('inlineImageFile').files[0];
+ if(!file)return;
+ if(file.size>4*1024*1024||!['image/jpeg','image/png','image/webp'].includes(file.type)){
+  message('A imagem precisa ser JPG, PNG ou WebP e ter até 4 MB.','error');return;
+ }
+ const id='local-'+Date.now()+'-'+Math.random().toString(36).slice(2,9);
+ pendingInlinePhotos.set(id,file);
+ const url=URL.createObjectURL(file);
+ const figure=photoFigure({src:url,localId:id,caption:'',alt:file.name});
+ const editor=$('editor');
+ if(currentInsertionBlock?.isConnected&&currentInsertionBlock.parentElement===editor){
+  currentInsertionBlock.after(figure);
+ }else editor.append(figure);
+ currentInsertionBlock=figure;
+ const p=document.createElement('p');p.append(document.createElement('br'));figure.after(p);
+ figure.querySelector('figcaption').focus();
+ message('Foto inserida. Edite a legenda abaixo da imagem e clique em Salvar no GitHub quando terminar.','ok');
+ $('inlineImageFile').value='';
 };
