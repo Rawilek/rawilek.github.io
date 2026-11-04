@@ -4,3 +4,8 @@
 .article-page .article-text h2{color:var(--coral);font:900 clamp(26px,3vw,34px)/1.3 var(--serif);margin:35px 0 15px}
 .article-page .article-text blockquote{margin:30px 0;border-left:5px solid var(--coral);padding:18px 23px;border-radius:0 14px 14px 0;background:#ff805615;font:italic 500 clamp(19px,2.1vw,25px)/1.6 var(--serif);color:#ffe0d7}
 .article-page .article-text p{margin:0 0 24px}
+
+/* Fotografias e legendas dentro do corpo das matérias */
+.article-page .article-text figure.article-photo{margin:34px 0 38px;padding:0;text-align:center}
+.article-page .article-text figure.article-photo img{display:block;max-width:100%;width:100%;height:auto;max-height:700px;object-fit:contain;border-radius:15px}
+.article-page .article-text figure.article-photo figcaption{margin:11px auto 0;max-width:760px;text-align:center;color:#f0b6c4;font:400 13px/1.7 var(--sans)}
