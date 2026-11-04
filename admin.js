@@ -95,6 +95,7 @@ function pastePlain(e){
  e.preventDefault();
  const text=clipboard?.getData('text/plain')||'';
  if(text)document.execCommand('insertText',false,text);
+ else message('Não foi encontrada uma imagem na área de transferência. Tente o botão Colar foto copiada ou Escolher foto do computador.','error');
 }
 function insertArticleImage(file){
  if(!file||!['image/jpeg','image/png','image/webp'].includes(file.type)||file.size>4*1024*1024){
@@ -119,6 +120,30 @@ function insertArticleImage(file){
  figure.querySelector('figcaption').focus();
  message('Imagem inserida! Digite a legenda abaixo da foto e clique em Salvar no GitHub para publicar.','ok');
 }
+
+
+async function pasteImageFromClipboard(){
+ if(!navigator.clipboard?.read){
+  message('Seu navegador não permite ler imagens pelo botão. Experimente clicar no texto e usar Ctrl + V ou escolha uma foto do computador.','error');return;
+ }
+ try{
+  const items=await navigator.clipboard.read();
+  for(const item of items){
+   const kind=item.types.find(x=>['image/png','image/jpeg','image/webp'].includes(x));
+   if(kind){
+    const blob=await item.getType(kind);
+    const ext=kind==='image/png'?'png':kind==='image/webp'?'webp':'jpg';
+    const file=new File([blob],'foto-colada.'+ext,{type:kind});
+    insertArticleImage(file);
+    return;
+   }
+  }
+  message('O conteúdo copiado não inclui uma foto que possa ser colada. Copie a imagem (não o endereço), use Windows + Shift + S para capturá-la ou clique em Escolher foto do computador.','error');
+ }catch(err){
+  message('Não foi possível acessar a imagem copiada. Verifique a permissão de área de transferência do navegador ou use Escolher foto do computador.','error');
+ }
+}
+$('pasteImageButton').onclick=()=>pasteImageFromClipboard();
 
 $('connect').onclick=async()=>{const value=$('token').value.trim();if(!value)return alert('Cole seu token pessoal do GitHub.');token=value;try{await sync();$('gate').classList.add('hidden');$('workspace').classList.remove('hidden');clearForm();$('token').value='';}catch(e){token='';alert('Não foi possível acessar o repositório. Confira o token, a permissão Contents e o repositório selecionado.\n'+e.message);}};
 $('disconnect').onclick=()=>{token='';articles=[];$('workspace').classList.add('hidden');$('gate').classList.remove('hidden');};
